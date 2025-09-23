@@ -780,7 +780,7 @@
                         </div>
                     </div>
 
-                    <form class="contact-form scroll-reveal" id="contactForm">
+                    <form class="contact-form scroll-reveal" id="contactForm" action="https://formspree.io/f/meorqkav" method="POST">
                         <div class="form-group">
                             <label><span class="en-content">Full Name *</span><span class="fr-content">Nom Complet *</span></label>
                             <input type="text" name="name" required>
@@ -810,6 +810,9 @@
                         <div class="form-group">
                             <label><span class="en-content">Message *</span><span class="fr-content">Message *</span></label>
                             <textarea name="message" required id="messageTextarea" placeholder="Tell us about your business challenges and goals..."></textarea>
+                            <input type="hidden" name="_subject" value="New contact from website">
+                            <input type="hidden" name="_next" value="https://yourdomain.com/thank-you.html">
+                            <input type="hidden" name="_captcha" value="false">
                         </div>
 
                         <button type="submit" class="submit-btn" id="submitBtn">
@@ -902,21 +905,16 @@
             });
         });
 
-        // Contact Form Handler
+        // Contact Form Validation Only
         document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const submitBtn = document.getElementById('submitBtn');
             const currentLang = document.body.getAttribute('data-lang');
-            const originalText = submitBtn.innerHTML;
+            const name = this.querySelector('[name="name"]').value.trim();
+            const email = this.querySelector('[name="email"]').value.trim();
+            const message = this.querySelector('[name="message"]').value.trim();
             
-            // Form validation
-            const formData = new FormData(this);
-            const name = formData.get('name').trim();
-            const email = formData.get('email').trim();
-            const message = formData.get('message').trim();
-            
+            // Basic validation
             if (!name || !email || !message) {
+                e.preventDefault();
                 alert(currentLang === 'fr' 
                     ? 'Veuillez remplir tous les champs obligatoires.' 
                     : 'Please fill in all required fields.');
@@ -926,27 +924,14 @@
             // Email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
+                e.preventDefault();
                 alert(currentLang === 'fr' 
                     ? 'Veuillez entrer une adresse courriel valide.' 
                     : 'Please enter a valid email address.');
                 return;
             }
             
-            // Show loading state
-            submitBtn.innerHTML = currentLang === 'fr' ? 'Envoi en cours...' : 'Sending...';
-            submitBtn.disabled = true;
-            
-            // Simulate secure form submission
-            setTimeout(() => {
-                alert(currentLang === 'fr' 
-                    ? 'Merci ! Votre message a été envoyé de manière sécurisée. Nous vous contacterons dans les 24 heures.' 
-                    : 'Thank you! Your message has been sent securely. We will contact you within 24 hours.');
-                
-                this.reset();
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 2000);
+            // Form will submit to Formspree automatically
         });
     </script>
 </body>
